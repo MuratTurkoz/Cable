@@ -19,8 +19,8 @@ public class UILineRender : Graphic
     //"VertexHelper", Unity'de bir UI öðesinin (User Interface - Kullanýcý Arayüzü) grafiksel içeriðini oluþturmak, düzenlemek ve optimize etmek için kullanýlan bir yardýmcý sýnýftýr. Bu sýnýf, bir UI öðesinin vertex'lerini (noktalarýný), üçgenlerini ve diðer grafik bileþenlerini doðrudan manipüle etmeyi saðlar. "VertexHelper" genellikle bir "MaskableGraphic" alt sýnýfýnda (örneðin, bir "Image" veya "Text" öðesi) kullanýlýr.
     protected override void OnPopulateMesh(VertexHelper vh)
     {
-        base.OnPopulateMesh(vh);
         vh.Clear();
+        base.OnPopulateMesh(vh);
         pos1 = _recTransform[1].anchoredPosition;
         float width = rectTransform.rect.width;
         float height = rectTransform.rect.height;
@@ -51,70 +51,52 @@ public class UILineRender : Graphic
 
         UIVertex vertex1 = UIVertex.simpleVert;
         vertex1.color = Color.white;
+        Quaternion point1Rotation = Quaternion.Euler(0, 0, RotatePointTowards(_recTransform[0].anchoredPosition, _recTransform[1].anchoredPosition) + 90);
+        vertex1.position = point1Rotation * new Vector3(-thickness / 2, 0);
         vertex1.position = new Vector3(_recTransform[0].anchoredPosition.x, 0);
         vh.AddVert(vertex1);
         //vertexs[0] = vertex;
         vertex1.position = new Vector3(_recTransform[0].anchoredPosition.x, thickness);
         vh.AddVert(vertex1);
+        Quaternion point2Rotation = Quaternion.Euler(0, 0, RotatePointTowards(_recTransform[0].anchoredPosition, _recTransform[1].anchoredPosition) - 90);
+        vertex1.position = point2Rotation * new Vector3(-thickness / 2, 0);
         //vertexs[1] = vertex;
         vertex1.position = new Vector3(_recTransform[1].anchoredPosition.x, thickness);
         vh.AddVert(vertex1);
         //vertexs[2] = vertex;
         vertex1.position = new Vector3(_recTransform[1].anchoredPosition.x, 0);
         vh.AddVert(vertex1);
+       
         vertexHelper = vh;
         DrawShape(vh);
         //vh.AddUIVertexQuad(0,1,2,3);
 
     }
-    public void RotateLine(float angle)
+    private float RotatePointTowards(Vector2 vertex, Vector2 target)
     {
-        for (int i = 0; i < points.Length; i++)
-        {
-            // Baþlangýç ve bitiþ noktalarýný belirli bir pivot etrafýnda döndür
-            points[i] = RotatePointAroundPivot(points[i], _recTransform[1].anchoredPosition, angle);
-        }
-        //SetVerticesDirty(); // Deðiþiklikleri UI'ye bildir
+        return (float)(Mathf.Atan2(target.y - vertex.y, target.x - vertex.x) * (180 / Mathf.PI));
     }
-
-    // Bir noktayý belirli bir pivot etrafýnda belirli bir açýyla döndürmek için yardýmcý fonksiyon
-    private Vector2 RotatePointAroundPivot(Vector2 point, Vector2 pivot, float angle)
+    private void DrawShape(VertexHelper vh)
     {
-        angle *= Mathf.Deg2Rad;
-        float cos = Mathf.Cos(angle);
-        float sin = Mathf.Sin(angle);
-        float x = cos * (point.x - pivot.x) - sin * (point.y - pivot.y) + pivot.x;
-        float y = sin * (point.x - pivot.x) + cos * (point.y - pivot.y) + pivot.y;
-        return new Vector2(x, y);
+        //RotateLine(Mathf.Atan(_recTransform[1].anchoredPosition.y / _recTransform[0].anchoredPosition.y));
+        vh.AddTriangle(0, 1, 3);
+        vh.AddTriangle(1, 2, 3);
     }
+    
     //public void RotateLine(float angle)
     //{
     //    transform.rotation = Quaternion.Euler(0, 0, angle);
     //}
-    private void DrawShape(VertexHelper vh)
-    {
-        vh.AddTriangle(0, 1, 3);
-        vh.AddTriangle(1, 2, 3);
-    }
+
 
 
     private void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.Q))
-        //{
-        //    RotateLine(45f); // 45 derece saat yönünde dön
-        //}
 
-        //// Örneðin, "E" tuþuna basýldýðýnda çizgiyi saat yönünün tersine döndür
-        //if (Input.GetKeyDown(KeyCode.E))
-        //{
-        //    RotateLine(-45f); // 45 derece saat yönünün tersine dön
-        //}
 
         Vector2 pos1 = _recTransform[0].anchoredPosition;
         Vector2 pos2 = _recTransform[1].anchoredPosition;
         points = new Vector2[] { pos1, pos2 };
-        //RotateLine(Mathf.Atan(_recTransform[1].anchoredPosition.y/ _recTransform[0].anchoredPosition.y));
         SetVerticesDirty(); // Deðiþiklikleri UI'ye bildir
 
     }
