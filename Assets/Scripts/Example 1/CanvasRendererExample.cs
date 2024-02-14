@@ -13,6 +13,7 @@ public class CanvasRendererExample : MonoBehaviour
     [SerializeField] private RectTransform _rectStart;
     [SerializeField] private RectTransform _rectEnd;
     [SerializeField] private Material _material;
+    [SerializeField] private float thickness = 40f;
     CanvasRenderer _canvasRenderer;
     RectTransform _rectTransform;
     GameObject _rectangle;
@@ -29,10 +30,8 @@ public class CanvasRendererExample : MonoBehaviour
     {
         _canvasRenderer.SetMesh(SetObjectMesh(_rectStart, _rectEnd));
         distance = Vector3.Distance(_rectStart.anchoredPosition, _rectEnd.anchoredPosition);
-        Debug.Log($"Bileþen boyutu: {_rectangle.GetComponent<RectTransform>().sizeDelta}");
-        Debug.Log(Vector3.Distance(_rectStart.anchoredPosition, _rectEnd.anchoredPosition));
-        //rectangleImage.SetNativeSize();
-        //GetDistance(_rectTransform);
+        //Debug.Log($"Bileþen boyutu: {_rectangle.GetComponent<RectTransform>().sizeDelta}");
+        //Debug.Log(Vector3.Distance(_rectStart.anchoredPosition, _rectEnd.anchoredPosition));
     }
 
     //Dikdörtgen oluþtur.
@@ -43,12 +42,12 @@ public class CanvasRendererExample : MonoBehaviour
         _rectTransform = _rectangle.AddComponent<RectTransform>();
         _rectTransform.parent = _canvas.transform;
         GetDistance(_rectTransform);
-        _rectTransform.anchoredPosition = new Vector2(0, -_rectTransform.sizeDelta.y/2);
+        _rectTransform.anchoredPosition = new Vector2(0, -_rectTransform.sizeDelta.y / 2);
         _rectTransform.localRotation = Quaternion.identity;
         _rectTransform.localScale = Vector3.one;
         _rectTransform.pivot = Vector2.zero;
         rectangleImage = _rectangle.AddComponent<Image>();
-       
+
         rectangleImage.sprite = _sprite;
         rectangleImage.material = _material;
         _canvasRenderer = _rectangle.GetComponent<CanvasRenderer>();
@@ -79,13 +78,13 @@ public class CanvasRendererExample : MonoBehaviour
         //Bu baðlamda, vertex'ler, üç boyutlu modelleme ve grafik programlarýnda önemli bir role sahiptir. 3D modelleme iþlemlerinde, vertex'lerin manipüle edilmesi ve düzenlenmesi, nesnenin þeklinin ve görünümünün deðiþtirilmesine olanak tanýr.
         // Köþelerin konumlarý
         vertices[0] = new Vector3(0, 0);//(0,0)
-        //Debug.Log($"vertices[0]: {vertices[0]}");
-        vertices[1] = new Vector3(0, 100);//(0,1)
-        //Debug.Log($"vertices[1]: {vertices[1]}");
-        vertices[2] = new Vector3(endPos.anchoredPosition.x + 100, endPos.anchoredPosition.y + 100);//(1,1)
-        //Debug.Log($"vertices[2]: {vertices[2]}");
-        vertices[3] = new Vector3(endPos.anchoredPosition.x + 100, endPos.anchoredPosition.y);//(1,0)
-        //Debug.Log($"vertices[3]: {vertices[3]}");
+        Debug.Log($"vertices[0]: {vertices[0]}");
+        vertices[1] = new Vector3(0, thickness);//(0,1)
+        Debug.Log($"vertices[1]: {vertices[1]}");
+        vertices[2] = new Vector3(endPos.anchoredPosition.x + thickness, endPos.anchoredPosition.y + thickness);//(1,1)
+        Debug.Log($"vertices[2]: {vertices[2]}");
+        vertices[3] = new Vector3(endPos.anchoredPosition.x + thickness, endPos.anchoredPosition.y);//(1,0)
+        Debug.Log($"vertices[3]: {vertices[3]}");
 
         //UV'ler (texture coordinates), bir mesh'in (að) yüzeyindeki her noktanýn bir texture üzerindeki konumunu belirten koordinat çiftleridir. UV koordinatlarý, 2 boyutlu bir düzlemde (genellikle 0 ile 1 arasýnda) belirtilir ve her bir koordinat, texture'nin belirli bir noktasýna karþýlýk gelir.
 
