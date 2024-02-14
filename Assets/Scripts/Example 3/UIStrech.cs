@@ -1,104 +1,78 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
+
 //using static UnityEngine.GraphicsBuffer;
 //using UnityEngine.UIElements;
 
 public class UIStrech : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
-    [SerializeField] private Image _cableImage;
-    [SerializeField] private Image _startImage;
-    Vector3 _newScale;
-    RectTransform rectTransform;
-    [SerializeField] private float rotationSpeed = 5f; // Dönme hýzý
-    Rect _rect;
+    [SerializeField] private RectTransform _startImage;
+    [SerializeField] private RectTransform _cableImage;
+
+    [SerializeField] private float _rotationSpeed = 1f; // Dönme hýzý
+
+
+    private float _angle;
+    private Vector2 _startPos;
+    private Vector2 _endPos;
+    // Fare hareketlerine göre dönme miktarýný hesapla
+
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        //throw new System.NotImplementedException();
+
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-
-        float deltaX = eventData.delta.x;
-        float deltaY = eventData.delta.y;
-
-        // Fare hareketlerine göre dönme miktarýný hesapla
-        float rotationAmount = (deltaX + deltaY) * rotationSpeed;
-
-        RectTransform rectTransform1 = _startImage.GetComponent<RectTransform>();
-        Vector2 val1 = rectTransform1.anchoredPosition;
-        // Ýkinci resmin köþe noktalarýný al
-        RectTransform rectTransform2 = GetComponent<RectTransform>();
-        Vector2 val2 = rectTransform2.anchoredPosition;
-
-        // Ýki nokta arasýndaki vektörü hesapla
-        Vector3 directionVector = val2 - val1;
-
-        // Yalnýzca z ekseni etrafýnda dönmek için vektörleri düzelt
-        directionVector.x = 0;
-        directionVector.y = 0;
-
-        // Vektörün yönüne doðru dönme rotasyonunu oluþtur
-        Quaternion targetRotation = Quaternion.LookRotation(Vector3.forward, directionVector);
-
-        // Objenin dönme iþlemini gerçekleþtir
-        _cableImage.transform.rotation = Quaternion.RotateTowards(_cableImage.transform.rotation, targetRotation, rotationAmount);
-
-        // Objenin boyutunu güncelle
-        _cableImage.GetComponent<RectTransform>().sizeDelta = new Vector2(GetDistance(), _cableImage.GetComponent<RectTransform>().sizeDelta.y);
-
+        GetAngle();
+        GetDistance();
         transform.position = eventData.position;
 
     }
+    private void GetPos()
+    {
+        //ilk Pos al
+        _startPos = _startImage.anchoredPosition;
+        //Son Pos al
+        _endPos = GetComponent<RectTransform>().anchoredPosition;
+
+    }
+    private float RotatePointTowards(float y, float x)
+    {
+        //Açýyý hesapla
+        return (float)(Mathf.Atan2(y, x) * (180 / Mathf.PI));
+    }
+
 
     public void OnEndDrag(PointerEventData eventData)
     {
-
+        _startPos = Vector2.zero;
+        _endPos = Vector2.zero;
     }
-    int GetDistance()
+    private void GetDistance()
     {
-        // Ýlk resmin köþe noktalarýný al
-        RectTransform rectTransform1 = _startImage.GetComponent<RectTransform>();
-        Vector2 val1 = rectTransform1.anchoredPosition;
-        //Vector3[] corners1 = new Vector3[4];
-        //rectTransform1.GetWorldCorners(corners1);
-
-        // Ýkinci resmin köþe noktalarýný al
-        RectTransform rectTransform2 = GetComponent<RectTransform>();
-        Vector2 val2 = rectTransform2.anchoredPosition;
-        //Vector3[] corners2 = new Vector3[4];
-        //rectTransform2.GetWorldCorners(corners2);
+        //Deðerleri al
+        GetPos();
 
         // Ýki resim arasýndaki mesafeyi hesapla
-        float distance = Vector3.Distance(val1, val2);
-        //float distance = Vector3.Distance(corners1[0], corners2[0]);
-        return Mathf.RoundToInt(distance);
-        //Debug.Log("Distance between images: " + distance);
+        float distance = Vector3.Distance(_startPos, _endPos);
+        _cableImage.sizeDelta = new Vector2(Mathf.RoundToInt(distance), _cableImage.sizeDelta.y);
+
+
     }
-    private float GetAngle()
+    private void GetAngle()
     {
-        //Quaternion targetRotation = Quaternion.LookRotation(targetVector, Vector3.up);
-        //transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * T);
-        RectTransform rectTransform1 = _startImage.GetComponent<RectTransform>();
-        Vector2 val1 = rectTransform1.anchoredPosition;
-        //Vector3[] corners1 = new Vector3[4];
-        //rectTransform1.GetWorldCorners(corners1);
-        val1.Normalize();
-        // Ýkinci resmin köþe noktalarýný al
-        RectTransform rectTransform2 = GetComponent<RectTransform>();
-        Vector2 val2 = rectTransform2.anchoredPosition;
-        val2.Normalize();
-        float angle = (float)(Mathf.Atan2((val2.y - val1.y), val2.x - val1.x) * (180 / Mathf.PI));
-        return angle;
+        //Deðerleri al
+        GetPos();
+
+        Vector3 directionVector = _endPos - _startPos;
+        Debug.Log(_angle);
+        //Birim vektörü oluþtur.
+        directionVector.Normalize();
+        //Açýyý hesapla
+        _angle = RotatePointTowards(directionVector.y, directionVector.x);
+        _cableImage.transform.rotation = Quaternion.Euler(0, 0, _angle*_rotationSpeed);
+
     }
-
-    //private void Update()
-    //{
-
-    //}
 }
