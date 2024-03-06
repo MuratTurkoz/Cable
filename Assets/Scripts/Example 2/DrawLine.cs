@@ -24,15 +24,15 @@ public class DrawLine : Graphic
         if (_recTransform.Length < 2)
             return;
 
-      
+
         for (int i = 0; i < _recTransform.Length - 1; i++)
         {
-      
+
             CreateLineSegment(_recTransform[i].anchoredPosition, _recTransform[i + 1].anchoredPosition, vh);
 
             int index = i * 5;
 
-           
+
             vh.AddTriangle(index, index + 1, index + 3);
             vh.AddTriangle(index + 3, index + 2, index);
 
@@ -46,10 +46,10 @@ public class DrawLine : Graphic
 
     private void CreateLineSegment(Vector2 point1, Vector2 point2, VertexHelper vh)
     {
-    
+
         Vector3 val1 = new Vector3(point1.x, point1.y, 0);
         Vector3 val2 = new Vector3(point2.x, point2.y, 0);
-       
+
         UIVertex vertex = UIVertex.simpleVert;
         vertex.color = color;
 
